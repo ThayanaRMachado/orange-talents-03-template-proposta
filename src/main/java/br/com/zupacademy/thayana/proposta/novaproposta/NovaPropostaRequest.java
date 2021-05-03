@@ -7,12 +7,14 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
+import br.com.zupacademy.thayana.proposta.compartilhados.validacao.CampoUnico;
 import br.com.zupacademy.thayana.proposta.compartilhados.validacao.CpfOuCnpj;
 
 @CpfOuCnpj
 public class NovaPropostaRequest {
 
 	@NotBlank
+	@CampoUnico(classe = Proposta.class, nomeAtributo = "cpfOuCnpj")
 	private String cpfOuCnpj;
 
 	private Integer tipo;	

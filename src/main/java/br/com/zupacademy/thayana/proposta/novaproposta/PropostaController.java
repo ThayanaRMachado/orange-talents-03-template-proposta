@@ -16,19 +16,26 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping("/propostas")
 public class PropostaController {
 
-	PropostaRepository propostaRepository;
+	private PropostaRepository propostaRepository;
 
 	public PropostaController(PropostaRepository propostaRepository) {
 		this.propostaRepository = propostaRepository;
 	}
-	
+
 	@PostMapping
 	@Transactional
-	public ResponseEntity<NovaPropostaResponse> cadastrar(@RequestBody @Valid NovaPropostaRequest request, UriComponentsBuilder uriBuilder) {
+	public ResponseEntity<?> cadastrar(@RequestBody @Valid NovaPropostaRequest request,
+			UriComponentsBuilder uriBuilder) {
+
+		if (propostaRepository.findByCpfOuCnpj(request.getCpfOuCnpj()).isPresent()) {
+			return ResponseEntity.unprocessableEntity().build();
+		}
+
 		Proposta proposta = request.converter();
-		propostaRepository.save(proposta);
-		
+		Proposta novaProposta2 = propostaRepository.save(proposta);
+
 		URI uri = uriBuilder.path("/propostas/{id}").buildAndExpand(proposta.getId()).toUri();
-		return ResponseEntity.created(uri).body(new NovaPropostaResponse(proposta));
+		return ResponseEntity.created(uri).body(new NovaPropostaResponse(novaProposta2));
 	}
+
 }
